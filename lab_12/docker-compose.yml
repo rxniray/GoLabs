@@ -1,0 +1,48 @@
+services:
+  nats:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+
+  generator-service:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: generator
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+      - filter-service
+      - square-service
+      - sum-service
+
+  filter-service:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: filter
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+
+  square-service:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: square
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
+
+  sum-service:
+    build:
+      context: .
+      args:
+        SERVICE_NAME: sum
+    environment:
+      - NATS_URL=nats://nats:4222
+    depends_on:
+      - nats
